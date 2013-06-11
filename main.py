@@ -44,12 +44,14 @@ class DetailsHandler(basehandler.BaseHandler):
 class UserSignUp(basehandler.BaseHandler):
 	def get(self):
 		self.render("signup-form.html")
-		
+	#The user should not be able to set their own role of course
+	#An admin interface is a TODO
 	def post(self):
 		self.username = self.request.get("username")
 		self.password = self.request.get("password")
 		self.verify = self.request.get("verify")
 		self.email = self.request.get("email")
+		self.role = self.request.get("role")
 		
 		userMessage = ""
 		passMessage = ""
@@ -57,12 +59,12 @@ class UserSignUp(basehandler.BaseHandler):
 		email_Message = ""
 		role_Message = ""
 		
-		validRole = 
+		validRole = user.valid_role(self.role)
 		validUserName = user.valid_username(self.username)
 		#validUserName = USER_RE.match(username)
 		validPassword = user.valid_password(self.password)
 		validEmail = user.valid_email(self.email)
-		if (validUserName and validPassword and (self.verify == self.password) and validEmail and ):
+		if (validUserName and validPassword and (self.verify == self.password) and validEmail and validRole):
 			self.done()
 		else:
 			if not validUserName:
@@ -76,9 +78,18 @@ class UserSignUp(basehandler.BaseHandler):
 				
 			if not self.verify == self.password:
 				verify_Message = "The passwords didn't match"
+
+			if not validRole:
+				role_Message = "Incorrect role"
 			
-			self.render("usersignup-form.html", usernameMessage=userMessage, passwordMessage=passMessage,verifyMessage = verify_Message, 
-			emailMessage = email_Message, usernameValue=username, emailValue=email)
+			self.render("signup-form.html", usernameMessage=userMessage, 
+				passwordMessage=passMessage,
+				verifyMessage = verify_Message, 
+			emailMessage = email_Message,
+			roleMessage = role_Message,
+			usernameValue=username, 
+			emailValue=email,
+			roleValue=role)
 
 	def done(self, *a, **kw):
 		raise NotImplementedError
@@ -91,7 +102,7 @@ class SignupHandler(UserSignUp):
 			msg = 'That user already exists.'
 			self.render('signup-form.html', usernameMessage = msg)
 		else:
-			u = user.User.register(self.username, self.password, self.email)
+			u = user.User.register(self.username, self.password,self.role, self.email)
 			u.put()
 
 			self.login(u)
@@ -122,7 +133,16 @@ class Logout(basehandler.BaseHandler):
 
 class ParseHandler(basehandler.BaseHandler):
 	def get(self):
-		self.render("parsePostPage.html")
+		if self.user and self.user.role == "admin":
+			logging.error(self.user.role)
+			self.render("parsePostPage.html")
+		else:
+			self.abort(403)
+		"""if seluser =="admin":
+			self.render("parsePostPage.html")
+		"""
+		
+
 
 	def post(self):
 		start_year = self.request.get("start_year")

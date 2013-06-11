@@ -13,7 +13,10 @@
 
 		<div id="loginArea">
 	      {% if user %}
-	        <p>{{user.username}}</p>
+	        <h3 id="username">{{user.username}}</h3>
+	        {% if user.role == "admin" %}
+	        <p>(Admin)</p>
+	        {% endif %}
 	        <a href="/logout">Log out</a>
 	      {% else %}
 	        {% include "login-form.html" %}

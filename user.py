@@ -69,12 +69,13 @@ class User(db.Model):
 		u = User.all().filter("username =", name).get()
 		return u
 	@classmethod
-	def register(cls,name,pw,email=None):
+	def register(cls,name,pw,role,email=None):
 		hash_pw = make_pw_hash(name,pw)
 		return User(parent = users_key(),
                    username = name,
                    pw_hash = hash_pw,	
-                   email = email)
+                   email = email,
+                   role = role)
 
 	@classmethod
 	def login(cls, name, pw):
