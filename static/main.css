@@ -1,0 +1,61 @@
+#wrapper {
+	width: 1200px;
+	height: 800px;
+	
+	margin-left:auto;
+    margin-right:auto;
+	padding: 0;
+	border: 0;
+	
+}
+
+#header {
+	width: 1000px;
+	height: 100px;
+	margin-left:auto;
+    margin-right:auto;
+	padding: 0;
+	border: 0;
+	
+}
+
+#header h1 {
+	float: left;
+}
+#content {
+	width: 700px;
+	height: 600px;
+	margin-left:auto;
+    margin-right:auto;
+	padding: 0;
+	border: 0;
+	
+}
+
+#keywordContainer {
+	display:inline-block;
+}
+
+#keywordContainer div{
+	display:inline-block;
+}
+#keywordList li {
+	display: inline;
+	list-style-type: none;
+	font-size: 8;
+}
+#keywordList li p{
+	font-size: 8;
+}
+
+#loginArea {
+	float: right;
+	width: 100px;
+	
+}
+#login-area input {
+	display: block;
+}
+#login-area label {
+	display: block;
+}

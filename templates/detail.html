@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if event %}
+<h3 id="date">Date: {{ event.date }}</h3>
+<p>{{ event.event }}</p>
+<label>Keywords:</label>
+{% for key,list in event.keywords.iteritems() %}
+  	<div id="keywordContainer">
+  	<!<h4><p style="display:inline">{{ key }}</p></h4>
+  	<ul id="keywordList">
+  	{% for keyword in list %}
+  	<li>{{ keyword }}, </li>
+  	{% endfor %}
+  	</ul>
+  	</div>
+  	
+{% endfor %}
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,43 @@
+{% if user %}
+  <p>Hej</p>
+
+{% else %}
+    <form method="post" action="/login" class="form">
+      <table class="table">
+        <tr>
+          <td class="label">
+            Username
+          </td>
+          <td>
+            <input type="text" name="username" value="{{username}}">
+          </td>
+        </tr>
+
+        <tr>
+          <td class="label">
+            Password
+          </td>
+          <td>
+            <input type="password" name="password" value="">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="" id="logIn">Logga in</a>
+          </td>
+          <td>
+            <a href="/signup" id="signUp">Registrera</a>
+          </td>
+        </tr>
+      </table>
+
+      <div class="error">
+        {{error}}
+      </div>
+
+      <input id="submitBtn" type="submit">
+      
+      
+    </form>
+{% endif %}
+
