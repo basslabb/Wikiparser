@@ -138,32 +138,28 @@ class ParseHandler(basehandler.BaseHandler):
 			self.render("parsePostPage.html")
 		else:
 			self.abort(403)
-		"""if seluser =="admin":
-			self.render("parsePostPage.html")
-		"""
-		
-
 
 	def post(self):
-		start_year = self.request.get("start_year")
-		end_year = self.request.get("end_year")
-		if start_year and end_year:
-			try:
-				start_year = int(start_year)
-				end_year = int(end_year)
-			except:
-				self.response.out.write("Has to be integer value")
-			#A correct start and end year
-			if int(start_year) < int(end_year) or int(start_year) == int(end_year):
-				print "Equal"
-				db.delete(event.Event.all())
-				w = wikiParser.WikiParse(start_year,end_year)
-				self.response.out.write("%s %s" % (start_year,end_year))
+		if self.user and self.user.role == "admin":
+			start_year = self.request.get("start_year")
+			end_year = self.request.get("end_year")
+			if start_year and end_year:
+				try:
+					start_year = int(start_year)
+					end_year = int(end_year)
+				except:
+					self.response.out.write("Has to be integer value")
+				#A correct start and end year
+				if int(start_year) < int(end_year) or int(start_year) == int(end_year):
+					print "Equal"
+					db.delete(event.Event.all())
+					w = wikiParser.WikiParse(start_year,end_year)
+					self.response.out.write("%s %s" % (start_year,end_year))
 
+				else:
+					self.response.out.write("End year has to equal, or be larger than start year")
 			else:
-				self.response.out.write("End year has to equal, or be larger than start year")
-		else:
-			self.response.out.write("Has to have startyear and endyear")
+				self.response.out.write("Has to have startyear and endyear")
 	
 
 app = webapp2.WSGIApplication([

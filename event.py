@@ -37,7 +37,7 @@ class Event(db.Model):
 	@classmethod
 	def create(cls,date,event):
 		cleanedText = cleanText(event)
-		k = getKeyWords(cleanedText)
+		k = getKeyWords(event)
 		d = generateDict(k)
 		jsonString = json.dumps(d)
 		return Event(text = cleanedText,
@@ -50,10 +50,11 @@ class Event(db.Model):
 
 	@classmethod
 	def as_Dict(cls,event):
-		cleanedDictString = cleanText2(event.keywords)
+		cleanedDictString = cleanText(event.keywords)
 		#keywordDict = ast.literal_eval(cleanedDictString)
 		keywordDict = ast.literal_eval(event.keywords)
-		logging.error(keywordDict)
+		#logging.error(keywordDict)
+
 		return {"date":event.date.strftime("%Y-%m-%d"),
 		"event":cleanText(event.text),
 		"keywords":cleanDict(keywordDict)}
@@ -62,6 +63,8 @@ class Event(db.Model):
 	def updateDict(cls,d):
 		pass
 
+
+##TODO Implement memcache. When everything works with the db
 def getEvents(update=False):
 	arts = memcache.get(key)
 	events = "top"
@@ -72,11 +75,11 @@ def getEvents(update=False):
 		events = list(events)
 		memcache.set(key,events)
 	return events
-
+##TODO Implement memcache. When everything works with the db
 def age_set(key,val):
 	save_time = datetime.datetime.utcnow()
 	memcache.set(key,(val,save_time))
-
+##TODO Implement memcache. When everything works with the db
 def age_get(key):
 	r = memcache.get(key)
 	if r:
@@ -84,17 +87,16 @@ def age_get(key):
 		age = (datetime.datetime.utcnow() - save_time).total_seconds()
 	else:
 		val,age = None,0
+
+
 def cleanDict(d):
 	
 	out = {}
 	for key,keywords in d.items():
-		logging.error(key)
 		cleanList = []
 		for keyword in keywords:
 			logging.error(cleanText(keyword))
 			cleanList.append(cleanText(keyword))
-			#keyword = cleanText2(keyword)
-			#logging.error(keyword)
 		d[key] = cleanList
 	return d
 
@@ -102,16 +104,13 @@ def cleanText(s):
 	return_s = re.sub(r'(\[|])',"",s)
 	return return_s
 
-def cleanText2(s):
-	#logging.error(s)
-	return_s = re.sub("[[*]]","",s)
-	return return_s
 #Retrieves wikipedia entities from the event text
 def getKeyWords(s):
 	keywords = re.findall(r'\[\[([^]]*)\]\]',s)
 	return keywords
 
-	
+#Create the dictionary consisting of keywords (found in event text) 
+# and the generated events
 def generateDict(l):
 	if len(l) is not 0:
 		d = {}
@@ -120,11 +119,13 @@ def generateDict(l):
 			#categories = keyWordGen.categories
 			keyWordGen.main(i)
 			categories = getattr(keyWordGen,"categories")
-			#categories = kwg.KeyWordGenerator(i)
 			if len(categories) > 0:
 				d[i] = categories
 			else:
 				d[i] = []
+			
+			#Seems to create huge dictionaries if you dont make sure these are deleted each run
+			#I'm a talkin 1000+ type dictionaries, no bueno.
 			del keyWordGen
 			del categories
 		return d

@@ -29,14 +29,12 @@ class WikiParse:
 
 	def wiki_parse(self,year):
 		#startTime = datetime.now()
-		ignoreWords = ["=== Date unknown ===","=== Date unknown ===", "== Births ==", "== Deaths =="]
+		ignoreWords = ["=== Date unknown ===","=== Date unknown ===",
+		"===Date unknown===", "== Births ==","==Births==", "== Deaths =="]
 		# create logger
 		standardUrl = "http://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&titles=%s&format=xml" % year
 		# add a file handler	
-		
-		"""req = urllib.urlopen(standardUrl)
-		content = req.read()
-		req.close()"""
+
 		urlFetch = urlfetch.fetch(standardUrl)
 		dom = parseString(urlFetch.content)
 		#year = 
@@ -135,6 +133,7 @@ def getDate(d):
 	else:
 		return None,None
 
+#Various cleaning
 def cleanText(s):
 	return_s = re.sub(r'[^\w]', ' ', s)
 	if return_s.find("amp"):

@@ -5,12 +5,11 @@ import re
 import logging
 
 class KeyWordGenerator:
-	#def __init__(self,title):
 	def __init__(self):
-		#self.main(formatTitle(title))
 		self.categories = []
 
 	def main(self,rawTitle):
+		logging.error(rawTitle)
 		title = formatTitle(rawTitle)
 		standardUrl = "http://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&titles=%s&format=xml" % title
 		req = urllib.urlopen(standardUrl)
@@ -25,7 +24,8 @@ class KeyWordGenerator:
 				if "REDIRECT" in line:
 					#logging.error("Hit Redirect: %s" % line.encode("latin-1","ignore"))
 					l = getTitle(line)
-					self.main(formatTitle(l))
+					if l:
+						self.main(formatTitle(l))
 				#Is a correct article
 				elif "Category" in line:
 					#gets associated categories
@@ -38,18 +38,21 @@ class KeyWordGenerator:
 					"Nothing"
 		else:
 			return None
-			#print dom
 
 	def returnCategories(self):
 		logging.error("Len: %s" % len(self.categories))
 		return self.categories
 
+#in order to input to the API
 def formatTitle(t):
 	return t.replace(" ","_")
 
 def getTitle(s):
-	keywords = re.search(r'\[\[([^]]*)\]\]',s).group()
-	return keywords
+	try:
+		keywords = re.search(r'\[\[([^]]*)\]\]',s).group()
+		return keywords
+	except:
+		return None
 def getCategories(s):
 	#reString = re.findall(r'\[\[([^]]*)\]\]',s)[0]
 	try:
