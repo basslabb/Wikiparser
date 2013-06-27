@@ -11,21 +11,7 @@ import keywordGenerator as kwg
 from google.appengine.api import memcache
 import ast
 
-class JSONProperty(db.TextProperty):
-	def validate(self, value):
-		return self._inflate(value)
 
-	def get_value_for_datastore(self, model_instance):
-		result = super(JsonProperty, self).get_value_for_datastore(model_instance)
-		result = simplejson.dumps(result)
-		return db.Text(result)
-	
-	def make_value_from_datastore(self, value):
-		try:
-			value = simplejson.loads(str(value))
-		except:
-			pass
-		return super(JsonProperty, self).make_value_from_datastore(value)
 def events_key(name = 'default'):
 	return db.Key.from_path('events', name)
 
@@ -90,7 +76,6 @@ def age_get(key):
 
 
 def cleanDict(d):
-	
 	out = {}
 	for key,keywords in d.items():
 		cleanList = []
@@ -100,16 +85,47 @@ def cleanDict(d):
 		d[key] = cleanList
 	return d
 
-def cleanText(s):
-	return_s = re.sub(r'(\[|])',"",s)
-	return return_s
 
-#Retrieves wikipedia entities from the event text
+def cleanText(s):
+	
+	"""takes event text as input, and returns a cleaned up version of the text, 
+		without brackets and the correct format for the keyword"""
+	#return_s = re.sub(r'(\[|])',"",s)
+	r = re.findall(r"(\[\[([^]]*)\]\]|[\w']+)",s)
+						 #r'\[\[([^]]*)\]\]'
+	print r
+	out_s = ""
+	if r is not None and len(r) is not 0:
+		for i in r:
+			if re.search(r"\[\[([^]]*)\]\]",i[0]) is not None:
+				#k1 is the article referenced, k2 is article text more suited for text
+				k1,k2 = clean_keyword_text(i[0])
+				if k2 is not None:
+					out_s+=" " + k2
+				else:
+					out_s+=" " + k1
+			else:
+				out_s +=" " + i[0]
+		out_s.strip()
+		return out_s
+	else:
+		return ""
+
+
+def clean_keyword_text(s):
+	"""Takes a keyword string as input and returns a tuple consisting of the keyword(s) """
+	return_s = re.sub(r'(\[|])',"",s)
+	if "|" in return_s:
+		return return_s.split("|")
+	else:
+		return return_s,None
+
+# Retrieves wikipedia entities from the event text
 def getKeyWords(s):
 	keywords = re.findall(r'\[\[([^]]*)\]\]',s)
 	return keywords
 
-#Create the dictionary consisting of keywords (found in event text) 
+# Create the dictionary consisting of keywords (found in event text) 
 # and the generated events
 def generateDict(l):
 	if len(l) is not 0:

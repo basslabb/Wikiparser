@@ -7,7 +7,9 @@ import event
 from datetime import datetime
 from google.appengine.api import urlfetch
 from google.appengine.ext import db
-
+"""
+	module responsible for connecting to the api, and x
+"""
 class WikiParse:
 	eventList = []
 	
@@ -29,6 +31,8 @@ class WikiParse:
 
 	def wiki_parse(self,year):
 		#startTime = datetime.now()
+
+		#TODO should be changed to regex instead...
 		ignoreWords = ["=== Date unknown ===","=== Date unknown ===",
 		"===Date unknown===", "== Births ==","==Births==", "== Deaths =="]
 		# create logger
@@ -78,7 +82,7 @@ class WikiParse:
 					fullDate = createDateTimeObj(year,getMonth(month),date)
 
 			e = None
-			#if (year and date and month and j) and (not date or month or j  == ""):
+			#If got date and event body, try to create an Event object and save it
 			if (fullDate and j) and (not j  == ""):
 
 				e = event.Event.create(fullDate,j)

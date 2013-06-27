@@ -21,6 +21,7 @@ import logging
 import user
 #from wikiParser import wikiParser
 import wikiParser
+#from basehandler import Basehandler
 import basehandler
 import event
 from google.appengine.ext import db
@@ -30,6 +31,7 @@ import ast
 class MainHandler(basehandler.BaseHandler):
     def get(self):
     	self.render("main.html")
+
 class DetailsHandler(basehandler.BaseHandler):
 	def get(self,id):
 		try:
@@ -130,7 +132,8 @@ class Logout(basehandler.BaseHandler):
 		self.response.delete_cookie('user')
 		self.logout()
 		self.redirect('/')
-
+class AdminHandler(basehandler.BaseHandler):
+	pass
 class ParseHandler(basehandler.BaseHandler):
 	def get(self):
 		if self.user and self.user.role == "admin":
